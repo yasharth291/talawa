@@ -38,6 +38,7 @@ class _NewsArticleState extends State<NewsArticle> {
     }
   }
 
+
   TextEditingController commentController;
   Preferences preferences = Preferences();
   ApiFunctions apiFunctions = ApiFunctions();
@@ -45,6 +46,7 @@ class _NewsArticleState extends State<NewsArticle> {
   List comments = [];
   bool moreComments = false;
   bool isCommentAdded = false;
+  bool isCommentLiked = false;
   int index;
   Map post;
   final Queries _query = Queries();
@@ -387,6 +389,10 @@ class _NewsArticleState extends State<NewsArticle> {
     getPostComments();
     return comments.length;
   }
+  Future<void> addLike(String postID, String commentID) async {
+    final Map result = await Queries().addCommentLike(commentID) as Map;
+    print(result);
+  }
 
   // a new widget for comment list
   Widget commentList() {
@@ -422,7 +428,9 @@ class _NewsArticleState extends State<NewsArticle> {
                   title: Text(
                     comments[index]['text'].toString(),
                   ),
-                  subtitle: Row(
+                  subtitle: Column(
+                  children: [
+                    Row(
                     children: [
                       Text(
                           '${comments[index]['creator']['firstName']} ${comments[index]['creator']['lastName']}'),
@@ -433,7 +441,27 @@ class _NewsArticleState extends State<NewsArticle> {
                         ),
                       ),
                       Text(commentTime(index)),
-                    ],
+                      ],
+                    ),
+                      Row(
+                      children:[
+                      IconButton(
+                        color : isCommentLiked ? const Color(0xff007397) : const Color(0xff9A9A9A),
+                          icon: const Icon(Icons.thumb_up),
+                          onPressed:(){
+                          print(comments[index].toString());
+                          }
+                      ),
+                        Text(
+                          '${comments[index]['likeCount']}',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                          ),
+                        ),
+                ],
+                      ),
+                ],
                   ),
                 );
               }),

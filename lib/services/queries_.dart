@@ -822,6 +822,34 @@ query{
     }
   }
 
+  addCommentLike(String commentID) async {
+    print(commentID);
+    const String addCommentLikeMutation = """
+     mutation likeComment(\$commentID: ID!) { 
+      likeComment( id: \$commentID,)
+      {
+        _id
+      }
+    }
+  """;
+    final GraphQLConfiguration graphQLConfiguration = GraphQLConfiguration();
+    final GraphQLClient _client = graphQLConfiguration.authClient();
+    final AuthController _authController = AuthController();
+    _authController.getNewToken();
+
+    final QueryResult _resp = await _client.mutate(MutationOptions(
+      documentNode: gql(addCommentLikeMutation),
+      variables: {
+        'commentID': commentID, //Add your variables here
+      },
+    ));
+    if (!_resp.loading) {
+      print(_resp.data);
+      print(_resp.exception);
+      return _resp.data;
+    }
+  }
+
   addPost(String text, String organizationId, String title) async {
     print(text);
     print(organizationId);
