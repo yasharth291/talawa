@@ -14,13 +14,11 @@ import 'package:talawa/utils/ui_scaling.dart';
 class CustomAppBar extends StatefulWidget with PreferredSizeWidget {
   CustomAppBar(
     this.title, {
-    this.isTest = false,
     Key key,
   })  : preferredSize = const Size.fromHeight(55.0),
         super(key: key);
 
   final String title;
-  final bool isTest;
 
   @override
   final Size preferredSize;
@@ -45,10 +43,15 @@ class _CustomAppBarState extends State<CustomAppBar> {
     final GraphQLClient _client = graphQLConfiguration.clientToQuery();
     final String orgId = await preferences.getCurrentOrgId();
 
-    final QueryResult result = await _client
-        .query(QueryOptions(documentNode: gql(_query.fetchOrgById(orgId))));
+    final QueryResult result = await _client.query(
+      QueryOptions(
+        documentNode: gql(
+          _query.fetchOrgById(orgId),
+        ),
+      ),
+    );
     if (result.hasException) {
-      print(result.exception);
+      debugPrint(result.exception.toString());
     } else if (!result.hasException) {
       final res = result.data['organizations'][0]['image'];
       if (res == null) {
@@ -61,43 +64,42 @@ class _CustomAppBarState extends State<CustomAppBar> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return AppBar(
       title: Text(
         widget.title,
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(
+          color: Colors.white,
+        ),
       ),
       leading: FutureBuilder(
         future: getImg(),
         builder: (_, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return Padding(
-              padding: EdgeInsets.all(
-                  widget.isTest ? 2 : SizeConfig.safeBlockHorizontal),
+              padding: EdgeInsets.all(SizeConfig.safeBlockHorizontal),
               child: CircleAvatar(
-                radius: widget.isTest ? 10 : SizeConfig.safeBlockVertical * 5,
+                radius: SizeConfig.safeBlockVertical * 5,
               ),
             );
           } else {
             return _imgSrc != null
                 ? Padding(
-                    padding: EdgeInsets.all(
-                        widget.isTest ? 2 : SizeConfig.safeBlockHorizontal),
+                    padding: EdgeInsets.all(SizeConfig.safeBlockHorizontal),
                     child: CircleAvatar(
-                      radius:
-                          widget.isTest ? 10 : SizeConfig.safeBlockVertical * 5,
+                      radius: SizeConfig.safeBlockVertical * 5,
                       backgroundImage: NetworkImage(
                           Provider.of<GraphQLConfiguration>(context)
                                   .displayImgRoute +
                               _imgSrc),
-                    ))
+                    ),
+                  )
                 : Padding(
-                    padding: EdgeInsets.all(
-                        widget.isTest ? 2 : SizeConfig.safeBlockHorizontal),
+                    padding: EdgeInsets.all(SizeConfig.safeBlockHorizontal),
                     child: CircleAvatar(
-                        radius: widget.isTest
-                            ? 10
-                            : SizeConfig.safeBlockVertical * 5,
+                        radius: SizeConfig.safeBlockVertical * 5,
                         backgroundImage:
                             const AssetImage("assets/images/team.png")),
                   );

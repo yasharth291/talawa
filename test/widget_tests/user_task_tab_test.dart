@@ -5,8 +5,9 @@ import 'package:provider/provider.dart';
 // Local files imports.
 import 'package:talawa/controllers/auth_controller.dart';
 import 'package:talawa/controllers/org_controller.dart';
+import 'package:talawa/model/orgmemeber.dart';
 import 'package:talawa/services/comment.dart';
-import 'package:talawa/services/post_provider.dart';
+import 'package:talawa/controllers/news_feed_controller.dart';
 import 'package:talawa/services/preferences.dart';
 import 'package:talawa/utils/gql_client.dart';
 import 'package:talawa/utils/ui_scaling.dart';
@@ -20,15 +21,16 @@ Widget userTasksPage() => MultiProvider(
         ChangeNotifierProvider<AuthController>(create: (_) => AuthController()),
         ChangeNotifierProvider<Preferences>(create: (_) => Preferences()),
         ChangeNotifierProvider<CommentHandler>(create: (_) => CommentHandler()),
-        ChangeNotifierProvider<PostProvider>(create: (_) => PostProvider()),
+        ChangeNotifierProvider<NewsFeedProvider>(
+            create: (_) => NewsFeedProvider()),
       ],
       child: MaterialApp(
         home: Builder(builder: (context) {
           SizeConfig().init(context);
           return UserTasks(
-            member: const {
-              '_id': "6076f6d2cd2288002704654b",
-            },
+            member: Member(
+              id: '5f566b32dc1b6076634d30a0',
+            ),
           );
         }),
       ),
@@ -45,7 +47,7 @@ void main() {
 
       await tester.pumpAndSettle();
       //verify if [users task tab ] page appears
-      expect(find.byType(Container), findsOneWidget);
+      expect(find.byType(Container), findsWidgets);
     });
 
     testWidgets("Testing overflow of users task tab  page in a mobile screen",
@@ -59,7 +61,7 @@ void main() {
       await tester.pumpAndSettle();
 
       //verify if [users task tab] page appears
-      expect(find.byType(Container), findsOneWidget);
+      expect(find.byType(Container), findsWidgets);
     });
     testWidgets("Testing overflow of users task tab in a tablet screen",
         (tester) async {
@@ -72,7 +74,7 @@ void main() {
 
       //verify if [ users task tab ] page appears
 
-      expect(find.byType(Container), findsOneWidget);
+      expect(find.byType(Container), findsWidgets);
     });
   });
 }

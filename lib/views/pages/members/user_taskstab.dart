@@ -1,6 +1,7 @@
 //flutter packages are called here
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:talawa/model/orgmemeber.dart';
 
 //pages are called here
 import 'package:talawa/services/queries_.dart';
@@ -16,7 +17,7 @@ class UserTasks extends StatefulWidget {
     @required this.member,
   }) : super(key: key);
 
-  Map member;
+  Member member;
 
   @override
   _UserTasksState createState() => _UserTasksState();
@@ -35,14 +36,16 @@ class _UserTasksState extends State<UserTasks> {
   }
 
   //getting user details
-  getUserDetails() async {
-    final String userID = widget.member['_id'].toString();
+  Future getUserDetails() async {
+    final String userID = widget.member.id.toString();
     final Map result =
         await apiFunctions.gqlquery(Queries().tasksByUser(userID));
     print(result);
-    setState(() {
-      userTasks = result == null ? [] : result['tasksByUser'] as List;
-    });
+    setState(
+      () {
+        userTasks = result == null ? [] : result['tasksByUser'] as List;
+      },
+    );
   }
 
   @override
@@ -60,13 +63,21 @@ class _UserTasksState extends State<UserTasks> {
     return userTasks == null
         ? Container(
             key: const Key("User Task Loading"),
-            child: const Center(
-              child: Loading(),
+            child: Center(
+              child: Loading(
+                key: UniqueKey(),
+                isCurrentOrgNull: false,
+                emptyContentIcon: Icons.work_outline_rounded,
+                emptyContentMsg: 'No Tasks found, Create One!',
+                refreshFunction: getUserDetails,
+              ),
             ),
           )
         : userTasks.isNotEmpty
             ? Container(
-                key: const Key("User Task Exists"),
+                key: const Key(
+                  "User Task Exists",
+                ),
                 child: ListView.builder(
                     itemCount: userTasks.length,
                     itemBuilder: (context, index) {
@@ -90,20 +101,25 @@ class _UserTasksState extends State<UserTasks> {
                               'Description: $description',
                             ),
                             contentPadding: EdgeInsets.fromLTRB(
-                                SizeConfig.safeBlockHorizontal * 2,
-                                SizeConfig.safeBlockVertical,
-                                SizeConfig.safeBlockHorizontal * 2,
-                                SizeConfig.safeBlockVertical),
+                              SizeConfig.safeBlockHorizontal * 2,
+                              SizeConfig.safeBlockVertical,
+                              SizeConfig.safeBlockHorizontal * 2,
+                              SizeConfig.safeBlockVertical,
+                            ),
                           ),
                         ],
                       ));
                     }))
             : Container(
-                key: const Key("User Task Not Exists"),
+                key: const Key(
+                  "User Task Not Exists",
+                ),
                 child: const Center(
                   child: Text(
                     "No Tasks found",
-                    style: TextStyle(fontSize: 20),
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
